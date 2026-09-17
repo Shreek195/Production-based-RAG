@@ -74,6 +74,7 @@ class PIIDetector:
     def detect(self, text: str) -> dict[str, list[str]]:
         """
         Detect PII types present in text.
+        Returns: {"pii_type": ["matches string", ... ]}
         """
         found = {}
         for pii_type, pattern in self.PATTERNS.items():
@@ -85,6 +86,7 @@ class PIIDetector:
     def mask(self, text: str) -> str:
         """
         Replace all PII with redaction markers.
+        Returns: "This is [EMAIL REDACTED]"
         """
         masked = text
         for pii_types, pattern in self.PATTERNS.items():
@@ -172,3 +174,4 @@ class SecurityPipeline:
         Returns: (cleaned_output, warnings)
         """
         return self.output_validator.validate(text)
+

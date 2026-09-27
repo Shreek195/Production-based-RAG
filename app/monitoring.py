@@ -119,6 +119,7 @@ class RequestTimer:
 
     def __enter__(self):
         self.start = time.time()
+        self.elapsed_ms = 0.0
         return self
 
     def __exit__(self, *args):

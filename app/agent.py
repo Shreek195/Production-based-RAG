@@ -140,27 +140,6 @@ class ProductionAgent:
 
         return graph.compile()
 
-    # @traceable(name="production_agent_invoke")
-    # def invoke(self, message: str) -> dict:
-    #     """
-    #     Invoke the agent with a user message.
-    #     Returns: {"response": str, "model_used": str, "error": str | None}
-    #     """
-    #     result = self.graph.invoke(
-    #         {
-    #             "messages": [HumanMessage(content=message)],
-    #             "error": None,
-    #             "retry_count": 0,
-    #             "model_used": "",
-    #         }
-    #     )
-
-    #     return {
-    #         "response": result["messages"][-1].content,
-    #         "model_used": result.get("model_used", "unknown"),
-    #         "error": result.get("error"),
-    #     }
-
     @traceable(name="production_agent_invoke")
     def invoke(self, message: str) -> dict:
         """
@@ -176,7 +155,6 @@ class ProductionAgent:
             }
         )
 
-        # --- THE FIX STARTS HERE ---
         # Safely extract the content, handling both strings and lists of blocks
         last_message = result["messages"][-1]
         raw_content = last_message.content
@@ -189,7 +167,6 @@ class ProductionAgent:
             )
         else:
             response_text = str(raw_content)
-        # --- THE FIX ENDS HERE ---
 
         return {
             "response": response_text.strip(),

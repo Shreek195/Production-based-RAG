@@ -677,7 +677,7 @@ wheels = [
 ]
 
 [[package]]
-name = "new-folder"
+name = "llm-guardrails-api"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

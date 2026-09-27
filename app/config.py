@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     fallback_model: str = "gemini-3.6-flash"
 
     # LangSmith
-    langchain_tracing_v2: bool = True
+    langsmith_tracing: bool = True
     langsmith_api_key: str = ""
     langsmith_project: str = "production-api"
 

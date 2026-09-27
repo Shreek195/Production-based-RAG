@@ -1,7 +1,7 @@
 [project]
-name = "new-folder"
+name = "llm-guardrails-api"
 version = "0.1.0"
-description = "Add your description here"
+description = "FastAPI + LangGraph chat API with input/output guardrails, PII masking, caching and rate limiting"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

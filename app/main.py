@@ -55,7 +55,7 @@ async def lifespan(app: FastAPI):
             "extra_data": {
                 "environment": settings.app_env,
                 "primary_model": settings.primary_model,
-                "tracing_enabled": settings.langchain_tracing_v2,
+                "tracing_enabled": settings.langchain_tracing,
             }
         },
     )
@@ -171,6 +171,18 @@ async def chat(request: Request, body: ChatRequest):
             raise HTTPException(
                 status_code=500,
                 detail="An error occurred while processing your request.",
+            )
+
+        if result.get("error") or result.get("model_used") == "error_handler":
+            logger.error(
+                "Agent failed", extra={"extra_data": {"error": result.get("error")}}
+            )
+            metrics.record_request(
+                latency_ms=0, input_tokens=0, output_tokens=0, error=True
+            )
+            raise HTTPException(
+                status_code=503,
+                detail="The model is temporarily unavailable. Please try again shortly.",
             )
 
         response_text = result["response"]

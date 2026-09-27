@@ -1,12 +1,12 @@
 # render.yaml - Infrastructure as Code for Render
 services:
   - type: web
-    name: production-langgraph-api
+    name: llm-guardrails-api
     runtime: python
     region: oregon
     plan: free
     buildCommand: pip install uv && uv sync --frozen --no-dev
-    startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: uv run --no-sync uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.3"
@@ -23,14 +23,14 @@ services:
       - key: PRIMARY_MODEL
         value: gemini-3.6-flash
       - key: FALLBACK_MODEL
-        value: gemini-3.6-flash
+        value: gemini-3.6-flash   # Ideally a different model, so the fallback survives if the primary is down
       - key: GEMINI_API_KEY
         sync: false   # Must be set manually - NEVER commit secrets
-      - key: LANGCHAIN_API_KEY
+      - key: LANGSMITH_API_KEY
         sync: false   # Must be set manually
-      - key: LANGCHAIN_TRACING_V2
+      - key: LANGSMITH_TRACING
         value: "true"
-      - key: LANGCHAIN_PROJECT
+      - key: LANGSMITH_PROJECT
         value: production-api
     healthCheckPath: /health
     autoDeploy: true

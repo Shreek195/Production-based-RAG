@@ -37,7 +37,7 @@ class HealthResponse(BaseModel):
 
     status: str = "healthy"
     environment: str
-    version: str = "1.0.0"
+    version: str = "1.1.0"
     checks: dict = {}
 
 

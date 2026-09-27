@@ -55,7 +55,7 @@ async def lifespan(app: FastAPI):
             "extra_data": {
                 "environment": settings.app_env,
                 "primary_model": settings.primary_model,
-                "tracing_enabled": settings.langchain_tracing,
+                "tracing_enabled": settings.langsmith_tracing,
             }
         },
     )

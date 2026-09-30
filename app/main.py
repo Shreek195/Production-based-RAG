@@ -33,13 +33,27 @@ from app.models import (
     ErrorResponse,
 )
 
-from app.security import SecurityPipeline
+from app.security import SecurityPipeline, PIIDetector
 from app.cache import ResponseCache
 from app.monitoring import get_logger, MetricsCollector, RequestTimer
 from app.agent import ProductionAgent
 
 load_dotenv()
 logger = get_logger("production-api")
+
+
+_trace_pii = PIIDetector()
+
+
+def chat_trace_inputs(inputs: dict) -> dict:
+    """Only send the masked message and thread_id to LangSmith."""
+    body = inputs.get("body")
+    if body is None:
+        return {}
+    return {
+        "message": _trace_pii.mask(body.message),
+        "thread_id": body.thread_id,
+    }
 
 
 @asynccontextmanager
@@ -105,7 +119,7 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # Endpoints
 @app.post("/chat", response_model=ChatResponse)
 @limiter.limit(get_settings().rate_limit)
-@traceable(name="chat_endpoint")
+@traceable(name="chat_endpoint", process_inputs=chat_trace_inputs)
 async def chat(request: Request, body: ChatRequest):
     # Access components from app.state
     security = request.app.state.security

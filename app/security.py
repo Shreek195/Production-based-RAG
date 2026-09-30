@@ -94,6 +94,17 @@ class PIIDetector:
         return masked
 
 
+_trace_pii = PIIDetector()
+
+
+def mask_trace_inputs(inputs: dict) -> dict:
+    """Mask PII in traced inputs before they're sent to LangSmith."""
+    return {
+        key: _trace_pii.mask(value) if isinstance(value, str) else value
+        for key, value in inputs.items()
+    }
+
+
 class OutputValidator:
     """
     Catches PII leakage and harmful content in responses.
@@ -167,7 +178,7 @@ class SecurityPipeline:
 
     #     return True, cleaned, notes
 
-    @traceable(name="security_check_input")
+    @traceable(name="security_check_input", process_inputs=mask_trace_inputs)
     def check_input(self, text: str) -> tuple[bool, str, list[str]]:
         notes = []
 
@@ -187,11 +198,10 @@ class SecurityPipeline:
 
         return True, cleaned, notes
 
-    @traceable(name="security_check_output")
+    @traceable(name="security_check_output", process_inputs=mask_trace_inputs)
     def check_output(self, text: str) -> tuple[str, list[str]]:
         """
         Validate output before returning to client.
         Returns: (cleaned_output, warnings)
         """
         return self.output_validator.validate(text)
-
